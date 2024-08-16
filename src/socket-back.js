@@ -1,9 +1,17 @@
+import chalk from 'chalk';
 import io from './server.js';
 
 io.on('connection', (socket) => {
-  console.log('Um cliente se conectou ! ID: ', socket.id);
+  console.log(chalk.greenBright('Um cliente se conectou ! ID: ', socket.id));
 
   socket.on('texto_editor', (texto) => {
     socket.broadcast.emit('texto_editor_cliente', texto);
+  });
+
+  socket.on('disconnect', (motivo) => {
+    console.log(
+      chalk.red(`Cliente "${socket.id}" desconectado!
+    Motivo: ${motivo}`)
+    );
   });
 });
