@@ -1,34 +1,27 @@
 import chalk from 'chalk';
 import io from './server.js';
 
-const documentos = [
-  {
-    nome: 'JavaScript',
-    texto: 'texto de javascript...',
-  },
-  {
-    nome: 'Node',
-    texto: 'texto de node...',
-  },
-  {
-    nome: 'Socket.io',
-    texto: 'texto de socket.io...',
-  },
-];
+import { atualizaDocumento, encontrarDocumento } from './documentosDb.js';
 
 io.on('connection', (socket) => {
   console.log(chalk.greenBright('Um cliente se conectou ! ID: ', socket.id));
 
-  socket.on('selecionar_documento', (nomeDocumento) => {
-    const documento = encontrarDocumento(nomeDocumento);
-
-    console.log(documento);
-
+  socket.on('selecionar_documento', async (nomeDocumento, devolverTexto) => {
     socket.join(nomeDocumento);
+
+    const documento = await encontrarDocumento(nomeDocumento);
+
+    if (documento) {
+      devolverTexto(documento.texto);
+    }
   });
 
-  socket.on('texto_editor', ({ texto, nomeDocumento }) => {
-    socket.to(nomeDocumento).emit('texto_editor_clientes', texto);
+  socket.on('texto_editor', async ({ texto, nomeDocumento }) => {
+    const atualizacao = await atualizaDocumento(nomeDocumento, texto);
+
+    if (atualizacao.modifiedCount) {
+      socket.to(nomeDocumento).emit('texto_editor_clientes', texto);
+    }
   });
 
   socket.on('disconnect', (motivo) => {
@@ -38,11 +31,3 @@ io.on('connection', (socket) => {
     );
   });
 });
-
-function encontrarDocumento(nome) {
-  const documento = documentos.find((documento) => {
-    return documento.nome === nome;
-  });
-
-  return documento;
-}
