@@ -5,6 +5,7 @@ import {
   adicionarDocumento,
   atualizaDocumento,
   encontrarDocumento,
+  excluirDocumento,
   obterDocumentos,
 } from './documentosDb.js';
 
@@ -52,5 +53,13 @@ io.on('connection', async (socket) => {
       chalk.red(`Cliente "${socket.id}" desconectado!
     Motivo: ${motivo}`)
     );
+  });
+
+  socket.on('excluir_documento', async (nome) => {
+    const resultado = await excluirDocumento(nome);
+
+    if (resultado.deletedCount) {
+      io.emit('excluir_documento_sucesso', nome);
+    }
   });
 });

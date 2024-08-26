@@ -1,4 +1,4 @@
-import { atualizaTextoEditor } from './documento.js';
+import { alertarERedirecionar, atualizaTextoEditor } from './documento.js';
 
 const socket = io();
 
@@ -21,8 +21,12 @@ socket.on('disconnect', (motivo) => {
     Motivo: ${motivo}`);
 });
 
-socket.on('documento_existente', (nome) => {
-  console.log(`O documento ${nome} já existe!`);
+function emitirExcluirDocumento(nome) {
+  socket.emit('excluir_documento', nome);
+}
+
+socket.on('excluir_documento_sucesso', (nome) => {
+  alertarERedirecionar(nome);
 });
 
-export { emitirTextoEditor, selecionaDocumento };
+export { emitirTextoEditor, selecionaDocumento, emitirExcluirDocumento };
