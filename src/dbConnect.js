@@ -1,8 +1,7 @@
 import { MongoClient } from 'mongodb';
+import 'dotenv/config';
 
-const cliente = new MongoClient(
-  'mongodb+srv://alura:123@aluracluester.s43zi.mongodb.net/?retryWrites=true&w=majority&appName=AluraCluester'
-);
+const cliente = new MongoClient(process.env.DB);
 
 let documentosColecao;
 
