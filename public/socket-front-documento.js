@@ -21,4 +21,8 @@ socket.on('disconnect', (motivo) => {
     Motivo: ${motivo}`);
 });
 
+socket.on('documento_existente', (nome) => {
+  console.log(`O documento ${nome} já existe!`);
+});
+
 export { emitirTextoEditor, selecionaDocumento };
